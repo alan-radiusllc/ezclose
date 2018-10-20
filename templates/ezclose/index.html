@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+
+<html>
+    <head>
+        <title>EZClose</title>
+    </head>
+
+    <body>
+        <h1>EZ says...</h1>
+        <div>
+            hey there partner! <br /> 
+            <strong>{{ boldmessage }}</strong><br />
+        </div>
+        <div>
+            <a href="/ezclose/about/">About</a><br />
+            <img src="{% static "images/virginia@2x.png" %}"
+             alt = "State of Virginia" />
+        </div>
+    </body>
+
+</html>
+

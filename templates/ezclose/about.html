@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+
+<html>
+    <head>
+        <title>EZClose About</title>
+    </head>
+
+    <body>
+        <h1>All about EZ</h1>
+        <div>
+            The client's best friend, and the realtor's best kept secret <br /> 
+            <i>{{ italicmessage }}</i><br />
+        </div>
+        <div>
+            <a href='/ezclose/'> Index</a><br />
+            <img src="{% static "images/maryland.png" %}"
+             alt = "State of Maryland" />
+            <img src="{{ MEDIA_URL}}massachusetts.png" />
+        </div>
+    </body>
+
+</html>
+
