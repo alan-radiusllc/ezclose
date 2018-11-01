@@ -2,23 +2,152 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
 
+# Variables for Choices
+CELL = "CELL"
+OFFICE = "OFFICE"
+HOME = "HOME"
+ADMIN = "ADMIN"
+PHONE_CHOICES = ( (CELL, "cell"), (OFFICE, "office"), (HOME, "home"), (ADMIN, "admin"), )
+
+BUY = "BUY"
+SELL = "SELL"
+SELL_BUY = "SELL_BUY"
+TRANSACTION_TYPES = ( (BUY, "buy"), (SELL, "sell"), (SELL_BUY, "sell / buy"), )
+
+MEETING = "MEETING"
+RESEARCH = "RESEARCH"
+DOCUMENTS = "DOCUMENTS"
+ADMIN = "ADMIN"
+CALL = "CALL"
+EMAIL = "EMAIL"
+INFO_REVIEW = "INFO_REVIEW"
+VENDOR = "VENDOR"
+TASK_TYPES = ((MEETING, "Meeting"), (RESEARCH, "Research"), (DOCUMENTS, "Documents"),
+              (ADMIN, "Administrative"), (CALL, "Phone Call"), (EMAIL, "Email"),
+              (INFO_REVIEW, "Information Review"), (VENDOR, "Vendor Action"),)
+
+MILESTONE_TYPES = ((MEETING, "Meeting"), (DOCUMENTS, "Documents"), (ADMIN, "Administrative"),)
+
+# task groups
+
+NOT_READY = "NOT_READY"
+READY     = "READY"
+DUE_ON    = "DUE_ON"
+DUE       = "DUE"
+OVERDUE   = "OVERDUE"
+CRITICAL  = "CRITICAL"
+STARTED   = "STARTED"
+COMPLETE  = "COMPLETE"
+TASK_STATUS = ((NOT_READY, "Not Ready"), (READY, "Ready"), (DUE_ON, "Due On"),
+              (DUE, "Due"), (OVERDUE, "Overdue"), (CRITICAL, "Critical"), 
+              (STARTED, "Started"), (COMPLETE, "Complete"),)
+
+
+# activity actions
+
+CONVENTIONAL = "CONVENTIONAL"
+JUMBO = "JUMBO"
+SHORT = "SHORT"
+VA = "VA"
+FHA = "FHA"
+FORECLOSURE = "FORECLOSURE"
+FINANCE_TYPES = ( (CONVENTIONAL, "Conventional"),
+                  (JUMBO,        "Jumbo"),
+                  (SHORT,        "Short"),
+                  (VA,           "VA"),
+                  (FHA,          "FHA"),
+                  (FORECLOSURE,  "Foreclosure"), )
+
+NORMAL = "NORMAL"
+SHORT_SELL = "SHORT_SELL"
+FORECLOSE = "FORECLOSE"
+SELL_TYPES = ( (NORMAL, "Normal"),
+               (SHORT_SELL, "Short Sell"),
+               (FORECLOSE,  "Foreclosure"), )
+
+BEFORE = "BEFORE"
+AFTER  = "AFTER"
+COINCIDENT = "COINCIDENT"
+NO_RELATION  = "NO_RELATION"
+RELATIONSHIPS = ((BEFORE, "Before"), (AFTER, "AFTER"), (COINCIDENT, "Coincident"), 
+                 (NO_RELATION, "No Relationship"), )
+                                                  
+RADON = "RADON"
+TITLE_5 = "TITLE_5"
+SHORT = "SHORT"
+SPECIAL_INSP = "SPECIAL_INSP"
+OTHER = "OTHER"
+
+TAGS = ((RADON, "Radon"), (TITLE_5, "Title V"), (SHORT, "SHORT"),
+        (SPECIAL_INSP, "Special Inspection"), (OTHER, "Other"), )
+
+# sfh, townhouse, condo, duplex,
+HOME = "SFH"
+TOWNHOME = "TOWNHOME"
+CONDO = "CONDO"
+DUPLEX = "DUPLEX"
+PROPERTY_TYPES = ((HOME, "Single Family Home"), (TOWNHOME, "Townhouse"), (CONDO, "Condominium"),
+                  (DUPLEX, "Duplex"),)
+                         
 # Create your models here.
 
-class Realtor(models.Model):    
-    # add ForeignKey to User table
+# This adds fields to the standard User fields
+# Note that users will be of different type: Client, Realtor, System Admin, Lender, etc.
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    picture = models.ImageField(upload_to='profile_images', blank=True, null=True)
+    website = models.URLField(blank=True, null=True)
+    
+    def __str__(self):
+        return self.user.username
+        
+    def __unicode__(self):
+        return self.user.username
+
+class Property(models.Model):
+    mls         = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    street      = models.CharField(max_length=128, blank=True, null=True)
+    street2     = models.CharField(max_length=128, blank=True, null=True)
+    city        = models.CharField(max_length=128, blank=True, null=True)
+    zipcode     = models.IntegerField(blank=True, null=True)
+    type        = models.CharField(max_length=20, choices = PROPERTY_TYPES, blank=True, null=True)  
+    picture     = models.ImageField(upload_to='profile_images', blank=True, null=True)
+    
+    def __str__(self):
+        return self.mls
+        
+    def __unicode__(self):
+        return self.mls
+        
+    class Meta:
+        verbose_name_plural = 'Properties'
+        
+class Brokerage(models.Model):
     name       = models.CharField(max_length=128)
-    brokerage  = models.CharField(max_length=128) # make this a foreign key
-    street     = models.CharField(max_length=128) #   and this
-    city       = models.CharField(max_length=128) #   and this
-    zipcode    = models.IntegerField()            #   and this
-    phone1     = models.CharField(max_length=20)  #   and one phone
-    phone2     = models.CharField(max_length=20)
-    phone1Type = models.CharField(max_length=8)
-    phone2Type = models.CharField(max_length=8)
-    email      = models.EmailField(max_length=254, unique=True)
+    street     = models.CharField(max_length=128, blank=True, null=True)
+    city       = models.CharField(max_length=128, blank=True, null=True)
+    zipcode    = models.CharField(max_length=128, blank=True, null=True)
+    phone1     = models.CharField(max_length=20, blank=True, null=True)  
+    phone2     = models.CharField(max_length=20, blank=True, null=True)
+    manager	   = models.CharField(max_length=128, blank=True, null=True)
+    mngrphone  = models.CharField(max_length=20, blank=True, null=True)
+    mngremail  = models.EmailField(max_length=254, blank=True, null=True)
+    locality   = models.CharField(max_length=128, blank=True, null=True, default='')
+    parent     = models.ForeignKey('self', blank=True, null=True) # if a local branch of another
+    
+class Realtor(models.Model):    
+    user       = models.ForeignKey(User)
+    name       = models.CharField(max_length=128) # required
+    brokerage  = models.ForeignKey(Brokerage, blank=True, null=True) 
+    phone1     = models.CharField(max_length=20)  # required
+    phone2     = models.CharField(max_length=20, blank=True, null=True)
+    phone1Type = models.CharField(max_length=8, choices=PHONE_CHOICES, blank=True, null=True) # make choice: cell, work, home
+    phone2Type = models.CharField(max_length=8, choices=PHONE_CHOICES, blank=True, null=True)
+    email      = models.EmailField(max_length=254, unique=True) # required
     # fax
-    # local branch - will provide locality - part of foreign key?
     # pager
     # more phones
     # assistant / admin point of contact
@@ -30,15 +159,17 @@ class Realtor(models.Model):
         return self.name
         
 class Client(models.Model):
-    name        = models.CharField(max_length=128)
-    street      = models.CharField(max_length=128)
-    city        = models.CharField(max_length=128)
-    zipcode     = models.IntegerField()
-    phone1      = models.CharField(max_length=20)
-    phone2      = models.CharField(max_length=20)
-    phone1Type  = models.CharField(max_length=8)
-    phone2Type  = models.CharField(max_length=8)
-    email       = models.EmailField(max_length=254, unique=True)
+    user        = models.ForeignKey(User)
+    name        = models.CharField(max_length=128) # required
+    street      = models.CharField(max_length=128, blank=True, null=True)
+    street2     = models.CharField(max_length=128, blank=True, null=True)
+    city        = models.CharField(max_length=128, blank=True, null=True)
+    zipcode     = models.IntegerField(blank=True, null=True)
+    phone1      = models.CharField(max_length=20) # required
+    phone2      = models.CharField(max_length=20, blank=True, null=True)
+    phone1Type  = models.CharField(max_length=8, choices=PHONE_CHOICES, blank=True, null=True)
+    phone2Type  = models.CharField(max_length=8, choices=PHONE_CHOICES, blank=True, null=True)
+    email       = models.EmailField(max_length=254, unique=True) # required
     newCustomer = models.BooleanField() # if this is the first transaction
     
     def __str__(self):
@@ -50,41 +181,70 @@ class Client(models.Model):
 class Transactions(models.Model):
 	realtor         = models.ForeignKey(Realtor)
 	client          = models.ForeignKey(Client)
-	transactionType = models.CharField(max_length=20)
-	property        = models.CharField(max_length=20)  # the MLS number? 
+	transactionType = models.CharField(max_length=20, choices=TRANSACTION_TYPES) 
+	property        = models.ForeignKey(Property, blank=True, null=True) 
 	status          = models.CharField(max_length=8)
-	active          = models.BooleanField()
+	active          = models.BooleanField() # redundant?
 	startDate       = models.DateTimeField()
-	endDate         = models.DateTimeField()
-	lastActivity    = models.DateTimeField()
+	endDate         = models.DateTimeField(blank=True, null=True)
+	lastActivity    = models.DateTimeField(blank=True, null=True)
 	# team          = models.ForeignKey(Team)  # add when Team class is ready
+	slug            = models.SlugField(unique=True)
+	# tags? Use these here to indicate which ones we need from the Default tasks?
+	tag1            = models.CharField(max_length=12, choices=TAGS, blank=True, null=True)
+	tag2            = models.CharField(max_length=12, choices=TAGS, blank=True, null=True)
+	tag3            = models.CharField(max_length=12, choices=TAGS, blank=True, null=True)
+	
+	def save(self, *args, **kwargs):
+	    self.slug = slugify(self.client.name+self.status)
+	    super(Transactions, self).save(*args, **kwargs)
 	
 	def __str__(self):
-	    return (self.client.name, self.startDate)
+	    str = "%s %s" % (self.client.name, self.startDate)
+	    return str
 	    
 	def __unicode__(self):
-	    return (self.client.name, self.startDate)
+	    str = "%s %s" % (self.client.name, self.startDate)
+	    return str
 	
 	class Meta:
 	    ordering = ["startDate"]
 	    verbose_name_plural = 'Transactions'
-    
+
+class Milestone(models.Model):
+    transaction = models.ForeignKey(Transactions)
+    name        = models.CharField(max_length=128, unique=True)
+    date        = models.DateTimeField(blank=True, null=True)
+    type        = models.CharField(max_length=128, choices=MILESTONE_TYPES) # meeting, filing, approval
+    scheduled   = models.NullBooleanField() # or use status?
+    def __str__(self):
+        return self.name
+      
+    def __unicode__(self):
+        return self.name
+
+# This table is all tasks for all transactions in the database            
 class Tasks(models.Model):
     transaction   = models.ForeignKey(Transactions)
-    name          = models.CharField(max_length=128)
-    group         = models.CharField(max_length=128)
-    category      = models.CharField(max_length=128)
-    wbs           = models.IntegerField()
-    prerequisites = models.NullBooleanField() # eventually make this a many to many
-    ripeDate      = models.DateTimeField()
-    dueDate       = models.DateTimeField()
-    status        = models.CharField(max_length=8)
-    dependents    = models.NullBooleanField() # eventually make many to many
-    assignee      = models.ForeignKey(Client) # make this to User table
-    milestone     = models.CharField(max_length=128, default='None')  # link to Milestone?
-    beforeAfter   = models.NullBooleanField()
-    overDue       = models.NullBooleanField()  # computed based on milestone and date?
+    name          = models.CharField(max_length=128)  # need to generate a unique name per transaction for the slug
+    group         = models.CharField(max_length=128, blank=True, null=True) # choice
+    category      = models.CharField(max_length=25, choices=TASK_TYPES, blank=True, null=True) # choice
+    wbs           = models.IntegerField(blank=True, null=True) # ?
+    prerequisites = models.NullBooleanField(blank=True, null=True) # eventually make this a many to many to self table
+    ripeDate      = models.DateTimeField(blank=True, null=True)
+    dueDate       = models.DateTimeField(blank=True, null=True)
+    status        = models.CharField(max_length=10, choices=TASK_STATUS, blank=True, null=True) # choice
+    dependents    = models.NullBooleanField(blank=True, null=True) # eventually make many to many to self?
+    assignee      = models.ForeignKey(User) # restrict to the team, usually client or realtor
+    milestone     = models.ForeignKey(Milestone, blank=True, null=True) # optional, if this task is a milestone
+    beforeAfter   = models.NullBooleanField(blank=True, null=True) # choice? This should probably be in milestone table?
+    overDue       = models.NullBooleanField()  # computed based on milestone and date? redundant with status
+    slug          = models.SlugField(unique=True)
     
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Tasks, self).save(*args, **kwargs)
+        
     def __str__(self):
         return self.name
       
@@ -94,23 +254,12 @@ class Tasks(models.Model):
     class Meta:
         verbose_name_plural = 'Tasks'
         
-class Milestone(models.Model):
-    transaction   = models.ForeignKey(Transactions)
-    name = models.CharField(max_length=128, unique=True)
-    date = models.DateTimeField()
-    type = models.CharField(max_length=128) # meeting, filing, approval
-    scheduled = models.NullBooleanField()
-    def __str__(self):
-        return self.task.name
-      
-    def __unicode__(self):
-        return self.task.name
-        
+# This table will hold the record of when changes to the tasks are made
 class Activity(models.Model):
     task      = models.ForeignKey(Tasks)
     timestamp = models.DateTimeField()
     actor     = models.ForeignKey(Client) # make this to User table
-    action    = models.CharField(max_length=8) # foreign key to actions table?
+    action    = models.CharField(max_length=8) # foreign key to actions table? choice?
     
     def __str__(self):
         return self.task.name
@@ -127,58 +276,117 @@ class Activity(models.Model):
 #   into the Tasks table with the new Transaction ID
 class DefaultTasks(models.Model):
     name          = models.CharField(max_length=128, unique=True)
-    purchase      = models.NullBooleanField()   # buy or sell
-    locality      = models.CharField(max_length=128)  # can help differentiate
-    brokerage     = models.CharField(max_length=128)  # make this a foreign key to table
-    tag1          = models.CharField(max_length=128)  # make these selection? or foreign keys?
-    tag2          = models.CharField(max_length=128)
-    tag3          = models.CharField(max_length=128)
+    purchase      = models.CharField(max_length=8, choices=TRANSACTION_TYPES, blank=True, null=True)
+    locality      = models.CharField(max_length=128, blank=True, null=True)  # can help differentiate
+    brokerage     = models.CharField(max_length=128, blank=True, null=True)  # make this a foreign key to table
+    tag1          = models.CharField(max_length=12, choices=TAGS, blank=True, null=True)  # make these selection? or foreign keys?
+    tag2          = models.CharField(max_length=12, choices=TAGS, blank=True, null=True)
+    tag3          = models.CharField(max_length=12, choices=TAGS, blank=True, null=True)
 
-    group         = models.CharField(max_length=128)
-    category      = models.CharField(max_length=128)
-    wbs           = models.IntegerField()     # how to represent 
+    group         = models.CharField(max_length=128, blank=True, null=True)
+    category      = models.CharField(max_length=128, blank=True, null=True)
+    wbs           = models.IntegerField(blank=True, null=True)     # how to represent 
     prerequisites = models.NullBooleanField() # eventually make this a many to many
     dependents    = models.NullBooleanField() # eventually make many to many
-    assignee      = models.ForeignKey(Client) # make this to User table
-    milestone     = models.CharField(max_length=128) # foreign key to milestone table
-    milestoneDate = models.DateTimeField() # 3NF?
+    assignee      = models.ForeignKey(User, blank=True, null=True) # make this to User table
+    milestone     = models.CharField(max_length=128, blank=True, null=True) # foreign key to milestone table
+    milestoneDate = models.DateTimeField(blank=True, null=True) # 3NF?
     beforeAfter   = models.NullBooleanField()
 
     def __str__(self):
-        return self.task.name
+        return self.name
       
     def __unicode__(self):
-        return self.task.name
+        return self.name
         
     class Meta:
         verbose_name_plural = 'DefaultTasks'
 
+# These are default milestone tasks that can be loaded into the Milestone table when a transaction is started
 class DefaultMilestones(models.Model):
 	name  = models.CharField(max_length=128, unique=True)
-	type = models.CharField(max_length=128) # meeting, filing, approval
+	type = models.CharField(max_length=128, blank=True, null=True) # make choice: meeting, filing, approval
 	
 	def __str__(self):
-		return self.task.name
+		return self.name
 	
 	def __unicode__(self):
-		return self.task.name
+		return self.name
 
 	class Meta:
 		verbose_name_plural = 'DefaultMilestones'
 
-#class Team()
 
-#class TeamMembers()
+#class TeamType(models.Model):
+REALTOR = "REALTOR"
+REAL_ESTATE_BROKER  = "REAL_ESTATE_BROKER"
+LENDER  = "LENDER"
+MORTGAGE_BROKER = "MORTGAGE_BROKER"
+CLOSING = "CLOSING"
+ATTORNEY = "ATTORNEY"
+BANKER = "BANKER"
+INSURANCE = "INSURANCE"
+INSPECTOR = "INSPECTOR"
+SPECIALTY_INSPECTOR = "SPECIALTY_INSPECTOR"
+HOME_REPAIR = "HOME_REPAIR"
+CONTRACTOR = "CONTRACTOR"
+WARRANTY = "WARRANTY"
+OTHER = "OTHER"
 
-#class Realtors()
-#class MortgageBrokers()
-#class Lenders()
-#class Closings()
-#class Attorneys()
-#class Bankers()
-#class Insurance()
-#class Inspectors()
-#class Specialty()
-#class HomeRepair()
-#class Roofers()
-#class Windows()
+TEAM_TYPES = ((REALTOR, "Realtor"),
+              (REAL_ESTATE_BROKER, "Real Estate Broker"),
+              (LENDER, "Lender"),
+              (MORTGAGE_BROKER, "Mortgage Broker"),
+              (BANKER, "Banker"),
+              (CLOSING, "Closing"),
+              (ATTORNEY, "Attorney"),
+              (INSURANCE, "Home Owners Insurance"),
+              (INSPECTOR, "Home Inspector"),
+              (SPECIALTY_INSPECTOR, "Speialty Inspector"),
+              (HOME_REPAIR, "Home Repair"),
+              (CONTRACTOR, "Contractor"),
+              (WARRANTY, "Home Warranty"),
+              (OTHER, "Other"),)
+              
+class TeamMember(models.Model):
+    type       = models.CharField(max_length=25, choices=TEAM_TYPES)
+    Company    = models.CharField(max_length=128)
+    name       = models.CharField(max_length=128) # the point of contact
+    street     = models.CharField(max_length=128, blank=True, null=True)
+    city       = models.CharField(max_length=128, blank=True, null=True)
+    zipcode    = models.CharField(max_length=128, blank=True, null=True)
+    phone1     = models.CharField(max_length=20, blank=True, null=True)  
+    phone2     = models.CharField(max_length=20, blank=True, null=True)
+    manager	   = models.CharField(max_length=128, blank=True, null=True)
+    mngrphone  = models.CharField(max_length=20, blank=True, null=True)
+    mngremail  = models.EmailField(max_length=254, blank=True, null=True)
+    locality   = models.CharField(max_length=128, blank=True, null=True, default='')
+    parent     = models.ForeignKey('self', blank=True, null=True) # if a local branch of another
+
+    def __str__(self):
+        return self.name
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'TeamMembers'
+
+class Team(models.Model):
+    transaction = models.ForeignKey(Transactions)
+    client      = models.ForeignKey(Client)       # Do we want to do teams by client or by transaction?
+    member      = models.ForeignKey(TeamMember)
+    dateAdded   = models.DateTimeField(blank=True, null=True)
+    dateChanged = models.DateTimeField(blank=True, null=True)
+    modified    = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'Teams'
+
+    

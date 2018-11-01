@@ -9,12 +9,37 @@
 
     <body>
         <h1>EZ says...</h1>
+        {% if user.is_authenticated %}
+            howdy {{ user.username }}
+        {% else %}
+            <div>hey there partner!</div>
+        {% endif %}
         <div>
-            hey there partner! <br /> 
-            <strong>{{ boldmessage }}</strong><br />
+        {% if milestones %}
+        <ul>
+            {% for milestone in milestones %}
+                <li>{{ milestone.name }}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <strong>No milestones present.</strong>
+        {% endif %}        
+        
+        {% if transactions %}
+        <ul>
+            {% for tran in transactions %}
+                <li>
+                <a href="/ezclose/transaction/{{ tran.slug }}">{{ tran.client.name}}</a></li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <strong> No transactions!</strong>
+        {% endif %}
         </div>
         <div>
             <a href="/ezclose/about/">About</a><br />
+            <a href="/ezclose/register/">Register</a><br />
+            <a href="/ezclose/login/">Login</a><br />
             <img src="{% static "images/virginia@2x.png" %}"
              alt = "State of Virginia" />
         </div>

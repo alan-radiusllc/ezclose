@@ -21,5 +21,10 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^about/$', views.about, name='about'),
+    url(r'^transaction/(?P<transaction_name_slug>[\w-]+)/$',views.show_transactions, name='show_transactions'),
+    url(r'^register/$',views.register,name='register'),
+    url(r'^login/$',views.user_login,name='login'),
+    #url(r'^add_defaultMilestone/$', views.add_defaultMilestone, name='add_defaultMilestone'),
+    #url(r'^defaultMilestone/(?P<default_milestone_name_slug>[\w\-]+)/$', views.show_)
     ] 
       
