@@ -1,12 +1,11 @@
-<!DOCTYPE html>
+{% extends 'ezclose/base.html' %}
 {% load staticfiles %}
 
-<html>
-    <head>
-        <title>EZClose</title>
-    </head>
+{% block title_block %}
+    Login
+{% endblock %}
 
-    <body>
+{% block body_block %}
         <div>
         <h1>Login to EZClose</h1>
         <form id="login_form" method="post" action="{% url 'login' %}">
@@ -18,6 +17,4 @@
             <input type="submit" value="submit" />
         </form>
         </div>
-    </body>
-</html>
-
+{% endblock %}

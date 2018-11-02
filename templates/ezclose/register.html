@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+{% extends 'ezclose/base.html' %}
+{% load staticfiles %}
 
-<html>
-    <head>
-        <title>EZClose</title>
-    </head>
+{% block title_block %}
+    Register
+{% endblock %}
 
-    <body>
+{% block body_block %}
         <div>
         <h1>Register for EZClose</h1>
         {% if registered %}
@@ -25,6 +25,4 @@
             </form>
         {% endif %}
         </div>
-    </body>
-</html>
-
+{% endblock %}

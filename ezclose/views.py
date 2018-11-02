@@ -1,14 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from ezclose.models import DefaultMilestones, Tasks, Transactions
 from ezclose.forms import UserForm, UserProfileForm
+from django.contrib.auth.decorators import login_required
+
 #from ezclose.forms import DefaultMilestonesForm
 
+@login_required
+def restricted(request):
+    return HttpResponse("Since you're logged in, you can see this text!")
+    
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('index'))
+        
 def index(request):
     #return HttpResponse("Hello from EZ-Close. <a href='/ezclose/about/'> About</a>")
     milestone_list = DefaultMilestones.objects.order_by('name')[:5]

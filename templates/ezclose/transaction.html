@@ -1,27 +1,24 @@
-<!DOCTYPE html>
+{% extends 'ezclose/base.html' %}
+{% load staticfiles %}
 
-<html>
-    <head>
-        <title>EZClose</title>
-    </head>
+{% block title_block %}
+    {{ transaction.client.name }}
+{% endblock %}
 
-    <body>
-        {% if transaction %}
-        <h1>{{ transaction.client.name }}</h1>
-            {% if tasks %}
-                <ul>
-                {% for task in tasks %}
-                    <li><a href=""{{ task.url }}">{{ task.name }} </a></li>
-                {% endfor %}
-                </ul>
-            {% else %}
-                <strong>No tasks for this transaction.</strong>
-            {% endif %}        
-        
+{% block body_block %}
+    {% if transaction %}
+    <h1>{{ transaction.client.name }}</h1>
+        {% if tasks %}
+            <ul>
+            {% for task in tasks %}
+                <li><a href=""{{ task.url }}">{{ task.name }} </a></li>
+            {% endfor %}
+            </ul>
         {% else %}
+            <strong>No tasks for this transaction.</strong>
+        {% endif %}        
+        
+    {% else %}
             <strong> No transactions!</strong>
-        {% endif %}
-        </div>
-    </body>
-</html>
-
+    {% endif %}
+{% endblock %}
