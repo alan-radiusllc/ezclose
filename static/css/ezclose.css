@@ -1,0 +1,61 @@
+h1 {
+    color: #12B017;
+}
+
+li a {
+    color: #FCA205;
+}
+
+h4 {
+    color: #12B017;
+}
+
+body {
+    padding-left: 15px;
+    background: linear-gradient(rgba(120,100,147,0.85),rgba(120,100,147,0.85)), 
+                    url("../../static/images/ez_background.jpg") 
+                    no-repeat center;
+                    background-size: 100% ; 
+
+}
+
+.ezbutton {
+    background-color: #4CAF50; 
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+.ezbutton2{font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+              -webkit-appearance:none;-moz-appearance:none;appearance:none;background:#fff;border:1px solid transparent;
+              border-radius:1.25rem;color:#2699fb;font-size:1rem;
+              text-transform:uppercase;padding:.3125rem 1.5625rem;
+              -webkit-transform:translateX(-50%);transform:translateX(-50%);font-weight:700}
+              
+th, td {
+    padding: 15 px;
+}
+
+th {
+    text-align: left;
+}
+
+table {
+   border-spacing: 5px;
+}
+
+table, th, td {
+   border: 1px solid black;
+}
+
+.center {
+    margin: auto;
+    width: 60%;
+}
