@@ -1,0 +1,36 @@
+{% extends 'ezclose/base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block title_block %}
+    Add Transaction
+{% endblock %}
+
+{% block body_block %}
+<div class="container">
+    <div class="row">
+        <div class="col-8 col-md-6 col-lg-4 col-xl-4">
+            <h1>Add a New Transaction</h1>
+
+            {% if created_new_transaction %}
+                <strong>Transaction Created!</strong>
+                <a href="{% url 'overview' %}">Go to details.</a><br />
+            
+            {% else %}
+                <strong>Create New Transaction:</strong><br />
+                <form id="newT_form" method="post" action="{% url 'new_transaction' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+            
+                    <!-- Display forms -->
+                    <!-- {{ newT_form.as_p }} -->
+                    {{ newT_form|crispy }} 
+            
+                    <input type="submit" class="btn btn-success"  name="submit" value="Create" />
+                </form>
+            {% endif %}
+            </div>
+            </div>
+          </div>
+      </div>
+{% endblock %}
+

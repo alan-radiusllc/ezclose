@@ -26,6 +26,10 @@ urlpatterns = [
     url(r'^login/$',views.user_login,name='login'),
     url(r'^restricted/', views.restricted, name='restricted'),
     url(r'^logout/$', views.user_logout, name='logout'),
+    url(r'^overview/$', views.overview, name='overview'),
+    url(r'^most_recent/$', views.most_recent, name='most_recent'),
+    url(r'^new_transaction/$', views.new_transaction, name='new_transaction'),
+    #url(r'^client_confirm/$', views.client_confirm, name='client_confirm'),
     #url(r'^add_defaultMilestone/$', views.add_defaultMilestone, name='add_defaultMilestone'),
     #url(r'^defaultMilestone/(?P<default_milestone_name_slug>[\w\-]+)/$', views.show_)
     ] 

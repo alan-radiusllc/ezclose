@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block title_block %}
-    Login
+    Welcome
 {% endblock %}
 
 {% block body_block %}
@@ -10,19 +10,9 @@
         {% if user.is_authenticated %}
             howdy {{ user.username }}
         {% else %}
-            <div>hey there partner!</div>
+            <div>Please <a href="{% url 'login' %}">Sign In</a></div>
         {% endif %}
-        <div>
-        {% if milestones %}
-        <ul>
-            {% for milestone in milestones %}
-                <li>{{ milestone.name }}</li>
-            {% endfor %}
-        </ul>
-        {% else %}
-            <strong>No milestones present.</strong>
-        {% endif %}        
-        
+
         {% if transactions %}
         <ul>
             {% for tran in transactions %}

@@ -1,20 +1,26 @@
 {% extends 'ezclose/base.html' %}
 {% load staticfiles %}
+{% load crispy_forms_tags %}
 
 {% block title_block %}
     Login
 {% endblock %}
 
 {% block body_block %}
-        <div>
+
         <h1>Login to EZClose</h1>
+
         <form id="login_form" method="post" action="{% url 'login' %}">
 	        {% csrf_token %}
             Username: <input type="text" name="username" value="" size="50" />
-            <br />
-            Password: <input type="password" name="password" value="" size="50" />
-            <br />
-            <input type="submit" value="submit" />
+            <br /> <br />
+            Password:  <input type="password" name="password" value="" size="50" />
+            <br /> <br />
+            <input type="submit" value="submit" /><br />
         </form>
+
+        <div>   
+            <a button class="ezbutton2" href="/my-team.html">12px</button></a>
         </div>
 {% endblock %}
+
