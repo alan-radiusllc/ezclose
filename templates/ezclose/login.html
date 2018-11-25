@@ -7,20 +7,32 @@
 {% endblock %}
 
 {% block body_block %}
-
-        <h1>Login to EZClose</h1>
+		<br /> <br />
 
         <form id="login_form" method="post" action="{% url 'login' %}">
 	        {% csrf_token %}
-            Username: <input type="text" name="username" value="" size="50" />
-            <br /> <br />
-            Password:  <input type="password" name="password" value="" size="50" />
-            <br /> <br />
-            <input type="submit" value="submit" /><br />
+            <div class="container">
+				<div class="row">
+				<div class="col">
+						Username: <input type="text" name="username" value="" size="50" />
+				</div>
+				</div>
+				<br /> 
+
+				<div class="row">
+				<div class="col">
+						Password:  <input type="password" name="password" value="" size="50" />
+				</div></div>
+				<br /> <br />
+
+				<div class="row">
+				<div class="col-1">
+				</div>
+				<div class="col">
+						<input type="submit" class="ezbutton2" value="submit" />
+				</div></div>
+			</div>
         </form>
 
-        <div>   
-            <a button class="ezbutton2" href="/my-team.html">12px</button></a>
-        </div>
 {% endblock %}
 

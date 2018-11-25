@@ -2,13 +2,24 @@ h1 {
     color: #12B017;
 }
 
+a { 
+    color: #f2a920;
+}
+
 li a {
     color: #FCA205;
 }
 
+
 h4 {
     color: #12B017;
 }
+
+#link_bar a { padding:15px; font-weight:bold; }
+#link_bar a:link { color:#FCA205; background-color:#0000a0; }
+#link_bar a:visited { color:#c0c0c0; background-color:#0000a0; }
+#link_bar a:hover { color:#ffffff; background-color:#000060; }
+#link_bar a:active { color:#f0f0f0; background-color:#00ff00; }
 
 body {
     padding-left: 15px;
@@ -35,10 +46,34 @@ body {
 
 .ezbutton2{font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
               -webkit-appearance:none;-moz-appearance:none;appearance:none;background:#fff;border:1px solid transparent;
-              border-radius:1.25rem;color:#2699fb;font-size:1rem;
-              text-transform:uppercase;padding:.3125rem 1.5625rem;
+              border-radius:1.25rem;color:#2699fb;font-size:0.75rem;
+              text-transform:uppercase;padding:.3125rem 3.5625rem;
               -webkit-transform:translateX(-50%);transform:translateX(-50%);font-weight:700}
-              
+
+.ezbutton3{font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+              -webkit-appearance:none;-moz-appearance:none;appearance:none;background:#2699fb;border:1px solid transparent;
+              border-radius:1.25rem;color:#ffffff;font-size:0.75rem;
+              text-transform:uppercase;padding:.3125rem 2.9625rem;
+              font-weight:700}              
+
+.navbar-brand-centered {
+        position: absolute;
+        left: 25%;
+        display: block;
+        width: 200px;
+        text-align: center;
+        background-color: #fff;
+}
+    
+.widebtn { width: 300px }
+ 
+.row-bg {
+    background-color: #a3a3a3;
+    border-radius: 5px;
+}
+
+.top-buffer { margin-top:5px; }
+             
 th, td {
     padding: 15 px;
 }

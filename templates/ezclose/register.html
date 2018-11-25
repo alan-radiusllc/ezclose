@@ -7,41 +7,51 @@
 {% endblock %}
 
 {% block body_block %}
-      <div class="container">
-          <div class="row">
-              <div class="col-6">
-                  <h1>Register for EZClose</h1>
-                  {% if registered %}
-                      <strong>Thank you for registering!</strong>
-                      <a href="{% url 'index' %}">Return to homepage.</a><br />
-            
-                  {% else %}
-                      <strong>Register here:</strong><br />
-                      <form id="user_form" method="post" action="{% url 'register' %}" enctype="multipart/form-data">
-                      {% csrf_token %}
-            
-                      <!-- Display forms -->
-                      <!-- {{ user_form.as_p }} -->
-                      <div class="row">
-                          <div class="col-6">
-                              {{ user_form.username|as_crispy_field }}
-                          </div>
-                          <div class="col-6">
-                               {{ user_form.email|as_crispy_field }}
-                          </div>
-                      </div>
-                      <div class="row">
-                      <div class="col-6">
-                              {{ user_form.password|as_crispy_field }}
-                         </div>
-                      </div>
-                      <!-- {{ user_form|crispy }} -->
-                      {{ profile_form|crispy }}
+	<br /> <br />
 
-                      <input type="submit" class="btn btn-success" name="submit" value="Register" />
-                      </form>
-                  {% endif %}
-              </div>
-          </div>
-      </div>
+	<div class="container">
+		<div class="row">
+			<div class="col-6">
+				
+				{% if registered %}
+					<strong>Thank you for registering!</strong>
+					<a href="{% url 'overview' %}">Go to your dashboard.</a><br />
+		  
+				{% else %}
+					<strong>Register here:</strong><br />
+					<form id="user_form" method="post" action="{% url 'register' %}" enctype="multipart/form-data">
+					{% csrf_token %}
+		  
+					<!-- Display forms -->
+					<!-- {{ user_form.as_p }} -->
+					<div class="row">
+						<div class="col">
+							{{ user_form.username|as_crispy_field }}
+						</div>
+						</div>
+						<div class="row">
+						<div class="col">
+							 {{ user_form.email|as_crispy_field }}
+						</div>
+					</div>
+					<div class="row">
+					<div class="col">
+							{{ user_form.password|as_crispy_field }}
+					   </div>
+					</div>
+					<!-- {{ user_form|crispy }} -->
+					{{ profile_form|crispy }}
+					<div class="row">
+					<div class="col-1">
+					</div>
+					<div class="col">
+						<input type="submit" class="ezbutton2" name="submit" value="Register" />
+					</div></div>
+					</form>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<br /> <br />
+
 {% endblock %}

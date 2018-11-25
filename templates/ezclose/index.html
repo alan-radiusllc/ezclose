@@ -6,13 +6,29 @@
 {% endblock %}
 
 {% block body_block %}
-        <h1>EZ says...</h1>
+ 
         {% if user.is_authenticated %}
-            howdy {{ user.username }}
+            Logged in as: {{ user.username }}
         {% else %}
-            <div>Please <a href="{% url 'login' %}">Sign In</a></div>
+        	<br />
+        	<br />
+
+            <div class="container">
+				<div class="row">
+					<div class="center">
+						<a button class="ezbutton2 widebtn" href="{% url 'login' %}">SIGN IN</button></a>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="center">
+						<a button class="ezbutton3" href="{% url 'register' %}">REGISTER</button></a>
+					</div>
+				</div>
+            </div>
         {% endif %}
 
+<!--
         {% if transactions %}
         <ul>
             {% for tran in transactions %}
@@ -26,8 +42,7 @@
         </div>
         <div>
 
-            <img src="{% static "images/virginia@2x.png" %}"
-             alt = "State of Virginia" />
         </div>
+        -->
 {% endblock %}
 

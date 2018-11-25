@@ -2,60 +2,51 @@
 {% load staticfiles %}
 
 {% block title_block %}
-    Overview
+    Transaction List
 {% endblock %}
 
 {% block body_block %}
-        <h1>EZ says...</h1>
+
+<div class="container">       
+ 
         {% if user.is_authenticated %}
-            howdy {{ user.username }}
+            <font color=#FCA205>Transaction list for {{ user.username }}.</font>
         {% else %}
-            <div>hey there partner!</div>
+            <div>Please <a href="{% url 'login' %}" style="color:#f2a920">Log in!</a></div>
         {% endif %}
-        <div>
-        {% if milestones %}
-        <ul>
-            {% for milestone in milestones %}
-                <li>{{ milestone.name }}</li>
-            {% endfor %}
-        </ul>
-        {% else %}
-            <strong>No milestones present.</strong>
-        {% endif %}        
+        </p>
         
         {% if transactions %}
-        <ul>
-            {% for tran in transactions %}
-                <li>
-                <a href="/ezclose/transaction/{{ tran.slug }}">{{ tran.client.name}}</a> {{ tran.startDate }} {{ tran.status }}</li>
-            {% endfor %}
-        </ul>
-        <table style="width:400px">
-          <tr>
-             <th>Client</th>
-             <th>Agent</th/>
-             <th>Start Date</th>
-             <th>Status</th>
-          </tr>
-          {% for tran in transactions %}
-            <tr>
-                <td>{{ tran.client.name }} </td>
-                <td>{{ tran.realtor.name }} </td>
-                <td>{{ tran.startDate }} </td>
-                <td>{{ tran.status }} </td>
-            </tr>
-          {% endfor %}
-        </table>  
-        
+
+				<div class="row">
+					 <div class="col">Agent</div>
+					 <div class="col">Start Date</div>
+					 <div class="col">Status</div>
+					 <div class="col">Type</div>
+					 <div class="col">Team</div>
+					 <div class="col">Property</div>
+				</div>
+				</p>
+				{% for tran in transactions %}
+					<div class="row no-gutters row-bg top-buffer" style="font-size: 12px">
+						<div class="col">{{ tran.realtor.name }} </div>
+						<div class="col"> <a href="/ezclose/transaction/{{ tran.slug }}">{{ tran.startDate }} </a></div>
+						<div class="col">{{ tran.status }} </div>
+						<div class="col">{{ tran.transactionType }} </div>
+						<div class="col"><a href="/ezclose/team/{{ tran.slug }}"> Team </a></div>  
+						<div class="col">Property Address </div> 
+					</div>
+				{% endfor %}
+
         {% else %}
             <strong> No transactions!</strong>
         {% endif %}
-        </div>
+		    
         <div>
-
-            <a href="{% url 'new_transaction' %}">New Transaction</a> 
-            <img src="{% static "images/virginia@2x.png" %}"
-             alt = "State of Virginia" />
-        </div>
+        	</br>
+            <a href="{% url 'new_transaction' %}"><img src="{{ MEDIA_URL}}add_item.png" /></a> 
+        </div>  
+</div>      
+ 
 {% endblock %}
 
