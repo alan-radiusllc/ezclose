@@ -29,12 +29,24 @@
 				</p>
 				{% for tran in transactions %}
 					<div class="row no-gutters row-bg top-buffer" style="font-size: 12px">
-						<div class="col">{{ tran.realtor.name }} </div>
+					<!--	<div class="col">{{ tran.realtor.name }} </div>
 						<div class="col"> <a href="/ezclose/transaction/{{ tran.slug }}">{{ tran.startDate }} </a></div>
 						<div class="col">{{ tran.status }} </div>
 						<div class="col">{{ tran.transactionType }} </div>
 						<div class="col"><a href="/ezclose/team/{{ tran.slug }}"> Team </a></div>  
-						<div class="col">Property Address </div> 
+						<div class="col">Property Address </div>  -->
+						<div class="col">
+							{{ tran.realtor.name }} <br/>
+							 <a id="clink" href="/ezclose/transaction/{{ tran.slug }}"><strong>{{ tran.startDate }}</strong> </a><br/>
+							{{ tran.status }} <br/>
+							{{ tran.transactionType }} <br/>
+							<a href="/ezclose/team/{{ tran.slug }}"> Team </a><br/>
+							Property Address 
+						</div> 					
+						<div class="col-2 vcenter">
+						<br/>
+						   <a href="/ezclose/transaction/{{ tran.slug }}"><img src="{{ MEDIA_URL}}Group62.png" /> </a> 
+						</div>
 					</div>
 				{% endfor %}
 

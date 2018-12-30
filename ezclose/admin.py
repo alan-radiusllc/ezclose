@@ -5,7 +5,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from ezclose.models import UserProfile, Realtor, Client, Transactions, Tasks, Activity, Milestone, DefaultTasks, DefaultMilestones, Brokerage, Property, Team, TeamMember
+from ezclose.models import UserProfile, Realtor, Client, Transactions, Tasks, Activity, Milestone, DefaultTasks, DefaultMilestones, Brokerage, Property, Team, TeamMember, TeamType
 
 #class TasksAdmin(admin.ModelAdmin):
 #    prepopulated_fields = {'slug':('name',)}
@@ -29,3 +29,4 @@ admin.site.register(Brokerage)
 admin.site.register(Property)
 admin.site.register(Team)
 admin.site.register(TeamMember)
+admin.site.register(TeamType)

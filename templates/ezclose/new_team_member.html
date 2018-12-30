@@ -1,0 +1,61 @@
+{% extends 'ezclose/base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{{ form.media.css }}
+
+{% block title_block %}
+    Add Team Member
+{% endblock %}
+
+{% block body_block %}
+
+{{ form.media.js }}
+
+<div class="container">
+    <div class="row">
+        <div class="col-8 col-md-6 col-lg-4 col-xl-4">
+            <h1>Add a New Team Member</h1>
+
+            {% if added_new_member %}
+                <strong>Member Added!</strong><br/>
+                <a href="/ezclose/transaction/{{ trns.slug }}"> Task Detail </a><br/>
+                <a href="/ezclose/team/{{ trns.slug }}"> Team </a><br/>
+            
+            {% else %}
+                <strong>Add New Team Member:</strong><br />
+                <form id="newTM_form" method="post" data-members-url = "{% url 'ajax_load_members' %}" action='/ezclose/add_team_member/{{ trns.slug }}/' %}" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+            
+                    <!-- Display forms -->
+                    <!-- {{ newT_form.as_p }} -->
+                    {{ newTM_form|crispy }} 
+            
+                    <input type="submit" class="btn btn-success"  name="submit" value="Create" />
+                </form>
+                <script>
+                    $("#id_type").change(function () 
+                    {
+      				  var url = $("#newTM_form").attr("data-members-url");  // get the url of the `load_cities` view
+      				  var typeId = $(this).val();  // get the selected country ID from the HTML input
+
+      				  $.ajax({                       // initialize an AJAX request
+      				    url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        				    data: {
+          				   'type': typeId       // add the country id to the GET parameters
+       				          },
+        				success: function (data) {   // `data` is the return of the `load_cities` view function
+          				   $("#id_member").html(data);  // replace the contents of the city input with the data that came from the server
+        			    }
+      				 });
+
+    				});
+  </script>
+            {% endif %}
+            </div>
+            </div>
+          </div>
+      </div>
+{% endblock %}
+

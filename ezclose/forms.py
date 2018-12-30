@@ -1,6 +1,8 @@
 from django import forms
+from django.forms import modelform_factory
 from django.contrib.auth.models import User
-from ezclose.models import UserProfile, Transactions, Tasks
+from ezclose.models import UserProfile, Transactions, Tasks, Team, TeamType, TeamMember
+from django_select2.forms import Select2MultipleWidget, ModelSelect2Widget
 
 #class DefaultMilestonesForm(forms.ModelForm):
 #    name = forms.CharField(max_length=128, help_text="Enter the milestone name")
@@ -46,5 +48,50 @@ class TransactionForm(forms.ModelForm):
         model = Transactions
         fields = ('realtor', 'client', 'transactionType', 'tag1', 'tag2', 'tag3')
         
-
+#class AddTeamMemberForm(forms.Form):
+#	type = forms.ModelChoiceField(
+#	    queryset=TeamType.objects.all(), 
+#	    label = u"Type", 
+#	    widget=ModelSelect2Widget(
+#	         queryset=TeamType.objects.all(),
+#	         model=TeamType, 
+#	         search_fields=['name__icontains'],
+#	    )
+#	)
+#	     
+#	member = forms.ModelChoiceField(
+#	    queryset=TeamMember.objects.all(), 
+#	    label = u"Member",
+#	    widget=ModelSelect2Widget(
+#	         model=TeamMember, 
+	    #    search_fields=['type__icontains'],
+	    #    dependent_fields={'type': 'type'}, 
+	    #    max_results=50,
+#	    )
+#	)
 		
+class AddTeamMemberForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ('type', 'member')
+
+    def __init__(self, *args, **kwargs):
+        super(AddTeamMemberForm, self).__init__(*args, **kwargs)
+        self.fields['member'].queryset = TeamMember.objects.none()
+        if 'type' in self.data:
+            try:
+                type_id = int(self.data.get('type'))
+                self.fields['member'].queryset = TeamMember.objects.filter(type_id=type_id)
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty City queryset
+        elif self.instance.pk:
+            self.fields['member'].queryset = self.instance.type.member_set
+		
+class TaskForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+       		 super(TaskForm, self).__init__(*args, **kwargs)
+        	 self.fields['group'].label = ''
+	class Meta:
+		model = Tasks
+		fields = ('name', 'group', 'dueDate', 'assignee', 'status')	
+	

@@ -23,5 +23,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^ezclose/', include('ezclose.urls')),
+    url(r'^chaining/', include('smart_selects.urls')),
+    url(r'^select2/', include('django_select2.urls')),
     url(r'^admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT) 

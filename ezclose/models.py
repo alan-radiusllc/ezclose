@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
+from smart_selects.db_fields import ChainedForeignKey
 
 # Variables for Choices
 CELL = "CELL"
@@ -377,10 +378,21 @@ TEAM_TYPES = ((REALTOR, "Realtor"),
               (CONTRACTOR, "Contractor"),
               (WARRANTY, "Home Warranty"),
               (OTHER, "Other"),)
-              
-class TeamMember(models.Model):
+
+class TeamType(models.Model):
     type       = models.CharField(max_length=25, choices=TEAM_TYPES)
-    Company    = models.CharField(max_length=128)
+    def __str__(self):
+        return self.type
+
+    def __unicode__(self):
+        return self.type
+
+    class Meta:
+        verbose_name_plural = 'TeamTypes'
+                  
+class TeamMember(models.Model):
+    type       = models.ForeignKey('TeamType', related_name="name")
+    company    = models.CharField(max_length=128)
     name       = models.CharField(max_length=128) # the point of contact
     street     = models.CharField(max_length=128, blank=True, null=True)
     city       = models.CharField(max_length=128, blank=True, null=True)
@@ -404,17 +416,18 @@ class TeamMember(models.Model):
 
 class Team(models.Model):
     transaction = models.ForeignKey(Transactions)
-    client      = models.ForeignKey(Client)       # Do we want to do teams by client or by transaction?
+    # client      = models.ForeignKey(Client)       # Do we want to do teams by client or by transaction?
     member      = models.ForeignKey(TeamMember)
+    type        = models.ForeignKey(TeamType, null=True)
     dateAdded   = models.DateTimeField(blank=True, null=True)
     dateChanged = models.DateTimeField(blank=True, null=True)
     modified    = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.name
+        return self.transaction.slug
 
     def __unicode__(self):
-        return self.name
+        return self.transaction.slug
 
     class Meta:
         verbose_name_plural = 'Teams'

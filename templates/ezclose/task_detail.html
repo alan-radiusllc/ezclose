@@ -1,0 +1,39 @@
+{% extends 'ezclose/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    {{ transaction.startDate }}
+{% endblock %}
+
+{% block body_block %}
+    {% csrf_token %}
+    {% if transaction %}
+        <h2>{{ transaction.Property }}  {{ transaction.startDate }}</h2>
+        <a href="/ezclose/team/{{ transaction.slug }}"> Team </a><br/>
+    	<a href="/ezclose/team/{{ transaction.property }}"> property </a><br/>
+    {% endif %}
+    {% if formset %}
+     <div class="container">
+        {% if tasks %}
+			<div class="row"">
+			  
+				 <div class="col">Name</div>
+				 <div class="col">Group</div>
+				 <div class="col">Due Date</div>
+				 <div class="col">Status</div>
+			
+			</div>         
+        {% endif %}
+
+        {% for form in formset %}
+            <div class="row">
+                {% for field in form.visible_fields %}
+                    {{ field }}
+                {% endfor %}
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+            <strong> No transactions!</strong>
+    {% endif %}
+{% endblock %}

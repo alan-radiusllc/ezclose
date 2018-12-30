@@ -5,11 +5,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from ezclose.models import DefaultMilestones, Tasks, Transactions, DefaultTasks, Realtor, Client
-from ezclose.forms import UserForm, UserProfileForm, TransactionForm
+from ezclose.models import DefaultMilestones, Tasks, Transactions, DefaultTasks, Team, Realtor, Client, TeamMember
+from ezclose.forms import UserForm, UserProfileForm, TransactionForm, TaskForm, AddTeamMemberForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.template.defaultfilters import slugify
+from django.forms import formset_factory, modelformset_factory
 
 import datetime
 
@@ -37,19 +38,20 @@ def overview(request):
 @csrf_protect
 @login_required
 def most_recent(request):
-    mr_trans = Transactions.objects.filter(client__user=request.user).order_by('startDate')[0]
+    mr_trans = Transactions.objects.filter(client__user=request.user).order_by('-startDate')[0]
     context_dict = {}
-    try:
-        #transact = Transactions.objects.get(slug=transaction_name_slug)
-        tasks    = Tasks.objects.filter(transaction=mr_trans)
-        context_dict['transaction'] = mr_trans
-        context_dict['tasks'] = tasks
+    return(show_transactions(request, mr_trans.slug))
+    #try:
+    #    #transact = Transactions.objects.get(slug=transaction_name_slug)
+    #    tasks    = Tasks.objects.filter(transaction=mr_trans)
+    #    context_dict['transaction'] = mr_trans
+    #    context_dict['tasks'] = tasks
 
-    except Transaction.DoesNotExist:
-        context_dict['tasks'] = None
-        context_dict['transaction'] = None
+    #except Transaction.DoesNotExist:
+    #    context_dict['tasks'] = None
+    #    context_dict['transaction'] = None
     
-    return render(request, 'ezclose/transaction.html', context_dict)
+    #return render(request, 'ezclose/transaction.html', context_dict)
     
 def index(request):
     milestone_list = DefaultMilestones.objects.order_by('name')[:5]
@@ -63,8 +65,14 @@ def about(request):
     context_dict = {'italicmessage': "crispy!"}
     return render(request, 'ezclose/about.html', context=context_dict)
 
+def account(request):
+	context_dict = {'italicmessage': "account info"}
+	return render(request, 'ezclose/about.html', context=context_dict)
+	# Note: update to give account information - name, address, email, phone, 
+	
 def show_transactions(request, transaction_name_slug):
     context_dict = {}
+
     try:
         transact = Transactions.objects.get(slug=transaction_name_slug)
         tasks    = Tasks.objects.filter(transaction=transact)
@@ -74,8 +82,31 @@ def show_transactions(request, transaction_name_slug):
     except Transaction.DoesNotExist:
         context_dict['tasks'] = None
         context_dict['transaction'] = None
+
+    TaskFormSet = modelformset_factory(Tasks, fields = ('name', 'group', 'dueDate', 'status',), extra=0	)
+    formset = TaskFormSet(queryset = tasks)
+    taskForm = zip(tasks, formset)
+    #print (taskForm)
+    #for form in formset:
+    #	print(form.as_table())    
+    return render(request, 'ezclose/task_detail.html', {'formset': formset, 'tasks': tasks, 'transaction': transact, 'taskform': taskForm })
+ 
+def show_team(request, transaction_name_slug):
+    context_dict = {}
+    try:
+        transact = Transactions.objects.get(slug=transaction_name_slug)
+        team    = Team.objects.filter(transaction=transact)
+        context_dict['transaction'] = transact
+        context_dict['team'] = team
+
+    except Transactions.DoesNotExist:
+        context_dict['team'] = None
+        context_dict['transaction'] = None
     
-    return render(request, 'ezclose/transaction.html', context_dict)
+    return render(request, 'ezclose/team.html', context_dict)
+    
+def addRealtorToTeam(transaction, realtor):
+	return
 
 def register(request):
     registered = False
@@ -177,7 +208,11 @@ def new_transaction(request):
             # query default tasks for transaction type
             # query for the tags we have, and locality
             # insert those into the Tasks table with this transaction id
-            tasks    = DefaultTasks.objects.filter(purchase=newT.transactionType)
+            print(newT.transactionType)
+            if newT.transactionType == 'BUY' or newT.transactionType == 'SELL':
+                tasks = DefaultTasks.objects.filter(purchase=newT.transactionType)
+            else:
+                tasks = DefaultTasks.objects.all()
             for t in tasks:
                 ntTransaction = newT
                 ntName = t.name
@@ -200,6 +235,7 @@ def new_transaction(request):
                            category=ntCategory, wbs=ntWbs, prerequisites=ntPre, status=ntStatus,
                            assignee=ntAssign, overDue=ntOver,slug=ntSlug)[0]
                 addTask.save()
+                # add the realtor to the team?
             created_new_transaction = True
         else:
             print(newT_form.errors)
@@ -210,7 +246,40 @@ def new_transaction(request):
     return render(request, 'ezclose/new_transaction.html',
                   {'newT_form': newT_form,
                    'created_new_transaction': created_new_transaction})
+
+def add_team_member(request, transaction_name_slug):
+    added_new_member = False
+    if request.method == 'POST':
+        newTM_form = AddTeamMemberForm(data = request.POST)
+        if newTM_form.is_valid():
+            newTM = newTM_form.save(commit=False)
+            
+            # add in the required stuff
+            transact = Transactions.objects.get(slug=transaction_name_slug)
+            newTM.transaction = transact
+            newTM.dateAdded = datetime.datetime.now()
+            newTM.dateChanged = datetime.datetime.now()
+            newTM.save()
+            
+            added_new_member = True
+        else:
+            print(newTM_form.errors)
+    else: 
+        # Not a POST
+        newTM_form = AddTeamMemberForm()
+    
+    trns = Transactions.objects.get(slug=transaction_name_slug)
+    return render(request, 'ezclose/new_team_member.html',
+                  {'newTM_form': newTM_form,
+                   'added_new_member': added_new_member,
+                   'trns': trns})
                     
+def load_teamMembers(request):
+    type_id = request.GET.get('type')
+    members = TeamMember.objects.filter(type_id=type_id)
+    return render(request, 'ezclose/member_dropdown_list.html', {'members': members})
+    
+
 #def client_confirm(request):
 #    if request.method == 'POST':
 #        # Gather from confirm form

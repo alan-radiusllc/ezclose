@@ -8,36 +8,47 @@
 {% block body_block %}
     {% csrf_token %}
 
+    <a href="javascript:history.go(-1)" class="btn btn-default">Back</a>
+    
     {% if transaction %}
-    <h1>{{ transaction.client.name }}</h1>
+		<h2>{{ transaction.Property }}  {{ transaction.startDate }}</h2>
+        <a href="/ezclose/transaction/{{ transaction.slug }}"> Task Detail </a><br/>
+
         {% if team %}
             <ul>
-            {% for task in tasks %}
-                <li><a href="{{ task.url }}">{{ task.name }} </a></li>
+            {% for teammate in team %}
+                <li>{{ teammate.member.type }}  {{ teammate.member.name }} </li>
             {% endfor %}
+
+
             </ul>
-        <table style="width:400px">
-          <tr>
-             <th>Name</th>
-             <th>Group</th/>
-             <th>Due Date</th>
-             <th>Assignee</th>
-             <th>Status</th>
-          </tr>
-          {% for task in tasks %}
-            <tr>
-                <td>{{ task.name }} </td>
-                <td>{{ task.group }} </td>
-                <td>{{ task.dueDate }} </td>
-                <td>{{ task.assignee }} </td>
-                <td>{{ task.status }} </td>
-            </tr>
-          {% endfor %}
-        </table>          {% else %}
-            <strong>No tasks for this transaction.</strong>
+        	<table style="width:400px">
+				<tr>
+				   <th>Name</th>
+				   <th>Type</th/>
+				   <th>Phone Number</th>
+				   <th>Email</th>
+				   <th>Locality</th>
+				</tr>
+				{% for teammate in team %}
+				  <tr>
+					  <td>{{ teammate.member.name }} </td>
+					  <td>{{ teammate.member.type }} </td>
+					  <td>{{ teammate.member.phone1 }} </td>
+					  <td>{{ teammate.member.mgremail }} </td>
+					  <td>{{ teammate.member.locality }} </td>
+				  </tr>
+				{% endfor %}
+        	</table>          
+        {% else %}
+            <strong>No team members for this transaction.</strong>
+            <!--  Just add the links -->
         {% endif %}        
-        
+        <div>
+        	</br>
+                <a href='/ezclose/add_team_member/{{ transaction.slug }}'><img src="{{ MEDIA_URL}}add_item.png" /></a> 
+        </div>  
     {% else %}
-            <strong> No transactions!</strong>
+        <strong> No transactions!</strong>
     {% endif %}
 {% endblock %}
