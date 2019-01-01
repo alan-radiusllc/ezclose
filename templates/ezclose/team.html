@@ -8,20 +8,17 @@
 {% block body_block %}
     {% csrf_token %}
 
-    <a href="javascript:history.go(-1)" class="btn btn-default">Back</a>
+<div class="container">
+    <div class="row">
+    <div class="col-8 col-md-6 col-lg-4 col-xl-4">
+    <!-- ><a href="javascript:history.go(-1)" class="btn btn-default">Back</a> -->
     
     {% if transaction %}
 		<h2>{{ transaction.Property }}  {{ transaction.startDate }}</h2>
         <a href="/ezclose/transaction/{{ transaction.slug }}"> Task Detail </a><br/>
 
         {% if team %}
-            <ul>
-            {% for teammate in team %}
-                <li>{{ teammate.member.type }}  {{ teammate.member.name }} </li>
-            {% endfor %}
-
-
-            </ul>
+ 
         	<table style="width:400px">
 				<tr>
 				   <th>Name</th>
@@ -43,7 +40,8 @@
         {% else %}
             <strong>No team members for this transaction.</strong>
             <!--  Just add the links -->
-        {% endif %}        
+        {% endif %}    
+        </div></div>    
         <div>
         	</br>
                 <a href='/ezclose/add_team_member/{{ transaction.slug }}'><img src="{{ MEDIA_URL}}add_item.png" /></a> 

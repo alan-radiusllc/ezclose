@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import modelform_factory
 from django.contrib.auth.models import User
-from ezclose.models import UserProfile, Transactions, Tasks, Team, TeamType, TeamMember
+from ezclose.models import UserProfile, Transactions, Tasks, Team, TeamType, TeamMember, Property
 from django_select2.forms import Select2MultipleWidget, ModelSelect2Widget
 
 #class DefaultMilestonesForm(forms.ModelForm):
@@ -70,6 +70,14 @@ class TransactionForm(forms.ModelForm):
 #	    )
 #	)
 		
+class PropertyForm(forms.ModelForm):
+    class Meta:
+        model = Property
+        fields = ('mls', 'type', 'picture')
+    def __init__(self, *args, **kwargs):
+        super(PropertyForm, self).__init__(*args, **kwargs)
+        self.fields['mls'].label = "MLS"
+
 class AddTeamMemberForm(forms.ModelForm):
     class Meta:
         model = Team
@@ -93,5 +101,10 @@ class TaskForm(forms.ModelForm):
         	 self.fields['group'].label = ''
 	class Meta:
 		model = Tasks
-		fields = ('name', 'group', 'dueDate', 'assignee', 'status')	
+		fields = ('name', 'group', 'dueDate', 'assignee', 'status')
+		widgets = {'name':    forms.TextInput(attrs={'disabled': True}),
+		           'group':   forms.TextInput(attrs={'disabled': True}),
+		           'dueDate': forms.TextInput(attrs={'disabled': True}),
+		           'status':  forms.Select(attrs={"onChange":'form.submit()'})
+		}
 	

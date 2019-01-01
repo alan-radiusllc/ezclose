@@ -10,38 +10,22 @@
 <div class="container">       
  
         {% if user.is_authenticated %}
-            <font color=#FCA205>Transaction list for {{ user.username }}.</font>
+            <font color=#FCA205>{{ user.username }}'s Transactions.</font>
         {% else %}
             <div>Please <a href="{% url 'login' %}" style="color:#f2a920">Log in!</a></div>
         {% endif %}
         </p>
         
         {% if transactions %}
-
-				<div class="row">
-					 <div class="col">Agent</div>
-					 <div class="col">Start Date</div>
-					 <div class="col">Status</div>
-					 <div class="col">Type</div>
-					 <div class="col">Team</div>
-					 <div class="col">Property</div>
-				</div>
-				</p>
-				{% for tran in transactions %}
-					<div class="row no-gutters row-bg top-buffer" style="font-size: 12px">
-					<!--	<div class="col">{{ tran.realtor.name }} </div>
-						<div class="col"> <a href="/ezclose/transaction/{{ tran.slug }}">{{ tran.startDate }} </a></div>
-						<div class="col">{{ tran.status }} </div>
-						<div class="col">{{ tran.transactionType }} </div>
-						<div class="col"><a href="/ezclose/team/{{ tran.slug }}"> Team </a></div>  
-						<div class="col">Property Address </div>  -->
+    		{% for tran in transactions %}
+				<div class="row no-gutters row-bg top-buffer" style="font-size: 12px">
 						<div class="col">
-							{{ tran.realtor.name }} <br/>
-							 <a id="clink" href="/ezclose/transaction/{{ tran.slug }}"><strong>{{ tran.startDate }}</strong> </a><br/>
-							{{ tran.status }} <br/>
-							{{ tran.transactionType }} <br/>
-							<a href="/ezclose/team/{{ tran.slug }}"> Team </a><br/>
-							Property Address 
+							Realtor: {{ tran.realtor.name }} <br/>
+							Tasks: <a id="clink" href="/ezclose/transaction/{{ tran.slug }}"><strong>{{ tran.startDate }}</strong> </a><br/>
+							Status: {{ tran.status }} <br/>
+							Type: {{ tran.transactionType }} <br/>
+							<a href="/ezclose/team/{{ tran.slug }}"> My Team </a><br/>
+							<a href="/ezclose/set_property/{{ tran.slug }}"> Property: {{ tran.property }} </a><br/>
 						</div> 					
 						<div class="col-2 vcenter">
 						<br/>
@@ -57,6 +41,8 @@
         <div>
         	</br>
             <a href="{% url 'new_transaction' %}"><img src="{{ MEDIA_URL}}add_item.png" /></a> 
+            <br/>
+            <br/>
         </div>  
 </div>      
  

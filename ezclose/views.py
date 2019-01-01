@@ -5,12 +5,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from ezclose.models import DefaultMilestones, Tasks, Transactions, DefaultTasks, Team, Realtor, Client, TeamMember
-from ezclose.forms import UserForm, UserProfileForm, TransactionForm, TaskForm, AddTeamMemberForm
+from ezclose.models import DefaultMilestones, Tasks, Transactions, DefaultTasks, Team, Realtor, Client, TeamMember, Property
+from ezclose.forms import UserForm, UserProfileForm, TransactionForm, TaskForm, AddTeamMemberForm, PropertyForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.template.defaultfilters import slugify
 from django.forms import formset_factory, modelformset_factory
+from django.shortcuts import redirect
 
 import datetime
 
@@ -84,7 +85,15 @@ def show_transactions(request, transaction_name_slug):
         context_dict['transaction'] = None
 
     TaskFormSet = modelformset_factory(Tasks, fields = ('name', 'group', 'dueDate', 'status',), extra=0	)
-    formset = TaskFormSet(queryset = tasks)
+    if request.method == 'POST':
+        formset = TaskFormSet(data=request.POST)
+        print("post form")
+        if formset.is_valid():
+            formset.save()
+    else:
+        formset = TaskFormSet(queryset = tasks)
+        print("populate form")
+
     taskForm = zip(tasks, formset)
     #print (taskForm)
     #for form in formset:
@@ -237,6 +246,7 @@ def new_transaction(request):
                 addTask.save()
                 # add the realtor to the team?
             created_new_transaction = True
+            return redirect('/ezclose/overview/')
         else:
             print(newT_form.errors)
     else: 
@@ -247,6 +257,39 @@ def new_transaction(request):
                   {'newT_form': newT_form,
                    'created_new_transaction': created_new_transaction})
 
+def set_property(request, transaction_name_slug):
+    property_set = False
+    if request.method == 'POST':
+        prop_form = PropertyForm(data = request.POST)
+        if prop_form.is_valid():
+            prop = prop_form.save(commit=False)
+            
+            # add in the required stuff
+            transact = Transactions.objects.get(slug=transaction_name_slug)
+            
+            # look up address and so forth from web if possible
+            prop.save()
+            transact.property = prop
+            transact.save()
+            property_set = True
+            return redirect('/ezclose/transaction/'+transaction_name_slug)
+        else:
+            print(prop_form.errors)
+    else: 
+        # Not a POST
+        transact = Transactions.objects.get(slug=transaction_name_slug)
+        if transact.property:
+            print (transact.property.type)
+            prop_form = PropertyForm(initial={'mls': transact.property, 'type': transact.property.type, 'picture': transact.property.picture })
+        else:
+            prop_form = PropertyForm()
+    
+    trns = Transactions.objects.get(slug=transaction_name_slug)
+    return render(request, 'ezclose/set_property.html',
+                  {'prop_form': prop_form,
+                   'set_property': set_property,
+                   'trns': trns})
+                    
 def add_team_member(request, transaction_name_slug):
     added_new_member = False
     if request.method == 'POST':
@@ -262,6 +305,7 @@ def add_team_member(request, transaction_name_slug):
             newTM.save()
             
             added_new_member = True
+            return redirect('/ezclose/team/'+transaction_name_slug)
         else:
             print(newTM_form.errors)
     else: 
@@ -298,8 +342,6 @@ def load_teamMembers(request):
 #    else:
 #        return render(request, 'ezclose/login.html', {})
             
-                                                                              
-
 #def add_defaultMilestone(request):
 #	form = DefaultMilestonesForm()
 #	

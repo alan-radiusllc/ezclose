@@ -11,8 +11,7 @@
 <div class="container">
     <div class="row">
         <div class="col-8 col-md-6 col-lg-4 col-xl-4">
-            <h1>Set the Property MLS</h1>
-
+      
             {% if property_set %}
                 <strong>Property Set!</strong><br/>
                 <a href="/ezclose/transaction/{{ trns.slug }}"> Task Detail </a><br/>
@@ -20,7 +19,7 @@
             
             {% else %}
                 <strong>Set Property MLS:</strong><br />
-                <form id="prop_form" method="post" action='/ezclose/set_property/{{ trns.slug }}/' %}" enctype="multipart/form-data">
+                <form id="prop_form" method="post" action='/ezclose/set_property/{{ trns.slug }}/'  enctype="multipart/form-data">
 
                     {% csrf_token %}
                     {{ prop_form|crispy }} 

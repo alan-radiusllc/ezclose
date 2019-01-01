@@ -6,21 +6,27 @@
 {% endblock %}
 
 {% block body_block %}
+    <div class="container">
     {% csrf_token %}
     {% if transaction %}
-        <h2>{{ transaction.Property }}  {{ transaction.startDate }}</h2>
+		<div class="row"">
+        <div class="col">
+        <h2>{{ transaction.startDate }}</h2>
         <a href="/ezclose/team/{{ transaction.slug }}"> Team </a><br/>
-    	<a href="/ezclose/team/{{ transaction.property }}"> property </a><br/>
+    	<a href="/ezclose/set_property/{{ transaction.slug }}"> Property {{ transaction.property }}</a><br/>
+		</div></div>
     {% endif %}
+    <form method="post" action=".">
+    {% csrf_token %}
+
     {% if formset %}
-     <div class="container">
         {% if tasks %}
 			<div class="row"">
 			  
-				 <div class="col">Name</div>
-				 <div class="col">Group</div>
-				 <div class="col">Due Date</div>
-				 <div class="col">Status</div>
+				 <div class="col-2">Name</div>
+				 <div class="col-2">Group</div>
+				 <div class="col-2">Due Date</div>
+				 <div class="col-2">Status</div>
 			
 			</div>         
         {% endif %}
@@ -30,10 +36,18 @@
                 {% for field in form.visible_fields %}
                     {{ field }}
                 {% endfor %}
+                {{ form.id }}
             </div>
         {% endfor %}
-        </div>
+        {{ formset.management_form }}
+        <br/>
+        <input type="submit" class="btn btn-success"  name="submit" value="Update" />
+        <br/>
+        <br/>
     {% else %}
             <strong> No transactions!</strong>
     {% endif %}
+    </form>
+    </div>
+
 {% endblock %}
