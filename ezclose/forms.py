@@ -3,6 +3,7 @@ from django.forms import modelform_factory
 from django.contrib.auth.models import User
 from ezclose.models import UserProfile, Transactions, Tasks, Team, TeamType, TeamMember, Property
 from django_select2.forms import Select2MultipleWidget, ModelSelect2Widget
+from django.utils.translation import ugettext_lazy as _
 
 #class DefaultMilestonesForm(forms.ModelForm):
 #    name = forms.CharField(max_length=128, help_text="Enter the milestone name")
@@ -23,6 +24,14 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         fields = ('name', 'phone1', 'phone1Type', 'phone2', 'phone2Type', 'street', 'street2',
                    'city', 'zipcode', 'picture', 'isRealtor', 'brokerage')
+        labels = {'isRealtor' : _('I am a Realtor'),
+                  'phone1'    : _('Primary Phone'), 
+                  'phone1Type': _('Primary Phone Type'),
+                  'phone2'    : _('Secondary Phone'), 
+                  'phone2Type': _('Secondary Phone Type'),}
+        def __init__(self, *args, **kwargs):
+            super(UserProfileForm, self).__init__(*args, **kwargs)
+            self.fields['isRealtor'].label = "I am a Realtor"
 
 '''
 class Transactions(models.Model):

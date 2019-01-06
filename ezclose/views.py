@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from ezclose.models import DefaultMilestones, Tasks, Transactions, DefaultTasks, Team, Realtor, Client, TeamMember, Property
+from ezclose.models import DefaultMilestones, Tasks, Transactions, DefaultTasks, Team, Realtor, Client, TeamMember, Property, UserProfile
 from ezclose.forms import UserForm, UserProfileForm, TransactionForm, TaskForm, AddTeamMemberForm, PropertyForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
@@ -63,7 +63,8 @@ def index(request):
     
 def about(request):
     #return HttpResponse("This is the about! <a href='/ezclose/'> Index</a>")
-    context_dict = {'italicmessage': "crispy!"}
+    up = request.user.userprofile.isRealtor
+    context_dict = {'italicmessage': "crispy!", 'is_a_realtor' : up }
     return render(request, 'ezclose/about.html', context=context_dict)
 
 def account(request):
@@ -84,7 +85,7 @@ def show_transactions(request, transaction_name_slug):
         context_dict['tasks'] = None
         context_dict['transaction'] = None
 
-    TaskFormSet = modelformset_factory(Tasks, fields = ('name', 'group', 'dueDate', 'status',), extra=0	)
+    TaskFormSet = modelformset_factory(Tasks, fields = ('name', 'group', 'dueDate', 'status',), extra=0)
     if request.method == 'POST':
         formset = TaskFormSet(data=request.POST)
         print("post form")
@@ -251,7 +252,9 @@ def new_transaction(request):
             print(newT_form.errors)
     else: 
         # Not a POST
-        newT_form = TransactionForm()
+        theClient = Client.objects.filter(user=request.user).get()
+        print(theClient)
+        newT_form = TransactionForm(initial={'client': theClient })
     
     return render(request, 'ezclose/new_transaction.html',
                   {'newT_form': newT_form,
