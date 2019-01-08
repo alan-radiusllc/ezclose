@@ -63,7 +63,11 @@ def index(request):
     
 def about(request):
     #return HttpResponse("This is the about! <a href='/ezclose/'> Index</a>")
-    up = request.user.userprofile.isRealtor
+    if request.user.is_authenticated():
+        up = request.user.userprofile.isRealtor
+    else:
+        up = False
+    
     context_dict = {'italicmessage': "crispy!", 'is_a_realtor' : up }
     return render(request, 'ezclose/about.html', context=context_dict)
 
