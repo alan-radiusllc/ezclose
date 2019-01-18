@@ -125,6 +125,28 @@ class Brokerage(models.Model):
         return self.name
         
 
+class UserProfile(models.Model):
+    user        = models.OneToOneField(User)
+    name        = models.CharField(max_length=128) # required
+    picture     = models.ImageField(upload_to='profile_images', blank=True, null=True)
+    website     = models.URLField(blank=True, null=True)
+    street      = models.CharField(max_length=128, blank=True, null=True)
+    street2     = models.CharField(max_length=128, blank=True, null=True)
+    city        = models.CharField(max_length=128, blank=True, null=True)
+    zipcode     = models.IntegerField(blank=True, null=True)
+    phone1      = models.CharField(max_length=20) # required
+    phone2      = models.CharField(max_length=20, blank=True, null=True)
+    phone1Type  = models.CharField(max_length=8, choices=PHONE_CHOICES, blank=True, null=True)
+    phone2Type  = models.CharField(max_length=8, choices=PHONE_CHOICES, blank=True, null=True)
+    isRealtor   = models.BooleanField(default=False)
+    brokerage   = models.ForeignKey(Brokerage, blank=True, null=True) 
+
+    def __str__(self):
+        return self.user.username
+        
+    def __unicode__(self):
+        return self.user.username
+
 class Property(models.Model):
     mls         = models.CharField(max_length=20, unique=True, blank=True, null=True)
     street      = models.CharField(max_length=128, blank=True, null=True)
@@ -184,29 +206,6 @@ class Client(models.Model):
     def __unicode__(self):
         return self.name
          
-class UserProfile(models.Model):
-    user = models.OneToOneField(User)
-    name        = models.CharField(max_length=128) # required
-    picture     = models.ImageField(upload_to='profile_images', blank=True, null=True)
-    website     = models.URLField(blank=True, null=True)
-    street      = models.CharField(max_length=128, blank=True, null=True)
-    street2     = models.CharField(max_length=128, blank=True, null=True)
-    city        = models.CharField(max_length=128, blank=True, null=True)
-    zipcode     = models.IntegerField(blank=True, null=True)
-    phone1      = models.CharField(max_length=20) # required
-    phone2      = models.CharField(max_length=20, blank=True, null=True)
-    phone1Type  = models.CharField(max_length=8, choices=PHONE_CHOICES, blank=True, null=True)
-    phone2Type  = models.CharField(max_length=8, choices=PHONE_CHOICES, blank=True, null=True)
-    isRealtor   = models.BooleanField(default=False)
-    brokerage   = models.ForeignKey(Brokerage, blank=True, null=True)
-    myRealtor   = models.ForeignKey(Realtor, blank=True, null=True)
-
-    def __str__(self):
-        return self.user.username
-        
-    def __unicode__(self):
-        return self.user.username
-
 class Transactions(models.Model):
     realtor         = models.ForeignKey(Realtor)
     client          = models.ForeignKey(Client)

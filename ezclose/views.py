@@ -38,6 +38,16 @@ def overview(request):
 
 @csrf_protect
 @login_required
+def realtor_overview(request):
+    #return HttpResponse("Hello from EZ-Close. <a href='/ezclose/about/'> About</a>")
+    milestone_list = DefaultMilestones.objects.order_by('name')[:5]
+    transaction_list = Transactions.objects.filter(realtor__user=request.user).order_by('client')[:15]
+    context_dict = {'milestones': milestone_list, 'transactions': transaction_list}
+    #context_dict = {'boldmessage': "crunchy!"}
+    return render(request, 'ezclose/overview.html', context=context_dict)
+
+@csrf_protect
+@login_required
 def most_recent(request):
     mr_trans = Transactions.objects.filter(client__user=request.user).order_by('-startDate')[0]
     context_dict = {}
@@ -62,6 +72,16 @@ def index(request):
     return render(request, 'ezclose/index.html', context=context_dict)
     
 def about(request):
+    #return HttpResponse("This is the about! <a href='/ezclose/'> Index</a>")
+    if request.user.is_authenticated():
+        up = request.user.userprofile.isRealtor
+    else:
+        up = False
+    
+    context_dict = {'italicmessage': "crispy!", 'is_a_realtor' : up }
+    return render(request, 'ezclose/about.html', context=context_dict)
+
+def client_list(request):
     #return HttpResponse("This is the about! <a href='/ezclose/'> Index</a>")
     if request.user.is_authenticated():
         up = request.user.userprofile.isRealtor
@@ -206,9 +226,14 @@ def user_login(request):
 
 def new_transaction(request):
     created_new_transaction = False
+    if request.user.is_authenticated():
+        up = request.user.userprofile.isRealtor
+    else:
+        up = False
     if request.method == 'POST':
         newT_form = TransactionForm(data = request.POST)
         if newT_form.is_valid():
+            print ("valid form")
             newT = newT_form.save(commit=False)
             # add in the required stuff
             newT.status="ACTIVE"
@@ -251,14 +276,23 @@ def new_transaction(request):
                 addTask.save()
                 # add the realtor to the team?
             created_new_transaction = True
-            return redirect('/ezclose/overview/')
+            if up:
+                return redirect('/ezclose/realtor_overview/')
+            else:
+                return redirect('/ezclose/overview/')
         else:
+            print("errors!")
             print(newT_form.errors)
     else: 
         # Not a POST
-        theClient = Client.objects.filter(user=request.user).get()
-        print(theClient)
-        newT_form = TransactionForm(initial={'client': theClient })
+        print ("not a POST")
+
+        if (up):
+            theRealtor = Realtor.objects.filter(user=request.user).get()
+            newT_form = TransactionForm(initial={'realtor': theRealtor})
+        else:
+            theClient = Client.objects.filter(user=request.user).get()
+            newT_form = TransactionForm(initial={'client': theClient })
     
     return render(request, 'ezclose/new_transaction.html',
                   {'newT_form': newT_form,

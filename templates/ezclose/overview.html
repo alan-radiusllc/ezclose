@@ -20,7 +20,7 @@
     		{% for tran in transactions %}
 				<div class="row no-gutters row-bg top-buffer" style="font-size: 12px">
 						<div class="col">
-							Realtor: {{ tran.realtor.name }} <br/>
+							Realtor: {{ tran.realtor.name }}  Client: {{ tran.client.name }}<br/>
 							Tasks: <a id="clink" href="/ezclose/transaction/{{ tran.slug }}"><strong>{{ tran.startDate }}</strong> </a><br/>
 							Status: {{ tran.status }} <br/>
 							Type: {{ tran.transactionType }} <br/>
